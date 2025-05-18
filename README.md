@@ -54,6 +54,10 @@ Built with simplicity and extensibility in mind, this library is ideal for integ
         - First by **number of rockets (descending)**.
         - Then by **mission name in descending alphabetical order** for ties.
 
+## Technical assumptions
+- Architecture selection - Hexagonal Architecture + Tactical DDD:
+  - Clean separation of concerns
+  - Robust and expressive domain model
 
 ## LLM usage
 - Basic .gitignore file generation taking into account IDE, programming language and OS.
