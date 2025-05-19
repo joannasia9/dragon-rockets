@@ -3,29 +3,38 @@ package org.six.infrastructure.repository;
 import org.six.domain.model.Rocket;
 import org.six.port.repository.RocketRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class InMemoryRocketRepository implements RocketRepository {
+    private final Map<String, Rocket> rockets = new HashMap<>();
+
+    @Override
+    public boolean existsByName(String name) {
+        return rockets.containsKey(name);
+    }
+
     @Override
     public void insert(Rocket rocket) {
-        // TODO: Implement
+        rockets.putIfAbsent(rocket.name(), rocket);
     }
 
     @Override
     public void update(Rocket rocket) {
-        // TODO: Implement
+        if (rockets.containsKey(rocket.name()))
+            rockets.put(rocket.name(), rocket);
     }
 
     @Override
     public List<Rocket> findAll() {
-        // TODO: Implement
-        return null;
+        return rockets.values().stream()
+                .toList();
     }
 
     @Override
     public Optional<Rocket> findByName(String name) {
-        // TODO: Implement
-        return Optional.empty();
+        return Optional.ofNullable(this.rockets.getOrDefault(name, null));
     }
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RocketRepository {
+    boolean existsByName(String name);
+
     void insert(Rocket rocket);
 
     void update(Rocket rocket);
