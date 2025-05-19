@@ -8,9 +8,21 @@ public interface MissionSummaryMapper {
 }
 
 class DefaultMissionSummaryMapper implements MissionSummaryMapper {
+    private final RocketMapper rocketMapper;
+
+    DefaultMissionSummaryMapper(RocketMapper rocketMapper) {
+        this.rocketMapper = rocketMapper;
+    }
 
     @Override
     public MissionSummaryDTO toDto(MissionSummary domain) {
-        return null;
+        var rocketsDto = domain.rockets().stream()
+                .map(rocketMapper::toDto)
+                .toList();
+        return new MissionSummaryDTO(
+                domain.missionName(),
+                domain.missionStatus(),
+                domain.numberOfRocketsAssigned(),
+                rocketsDto);
     }
 }
