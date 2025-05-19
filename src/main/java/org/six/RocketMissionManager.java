@@ -7,15 +7,19 @@ import org.six.application.dto.RocketDTO;
 import org.six.application.dto.RocketsToMissionAssignmentDTO;
 import org.six.application.dto.SimpleRocketDTO;
 import org.six.application.service.AddNewRocketService;
+import org.six.application.service.ChangeRocketStatusService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RocketMissionManager {
     private final AddNewRocketService addNewRocketService;
+    private final ChangeRocketStatusService changeRocketStatusService;
 
-    public RocketMissionManager(AddNewRocketService addNewRocketService) {
+    public RocketMissionManager(AddNewRocketService addNewRocketService,
+                                ChangeRocketStatusService changeRocketStatusService) {
         this.addNewRocketService = addNewRocketService;
+        this.changeRocketStatusService = changeRocketStatusService;
     }
 
     void addNewRocket(SimpleRocketDTO rocket) {
@@ -23,7 +27,7 @@ public class RocketMissionManager {
     }
 
     void changeRocketStatus(RocketDTO rocketWithNewStatus) {
-        //TODO: Implement
+        changeRocketStatusService.execute(rocketWithNewStatus);
     }
 
     void addNewMission(NewMissionDTO mission) {

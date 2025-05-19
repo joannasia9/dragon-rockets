@@ -3,13 +3,13 @@ package org.six.infrastructure.repository;
 import org.six.domain.model.Rocket;
 import org.six.port.repository.RocketRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryRocketRepository implements RocketRepository {
-    private final Map<String, Rocket> rockets = new HashMap<>();
+    private final Map<String, Rocket> rockets = new ConcurrentHashMap<>();
 
     @Override
     public boolean existsByName(String name) {

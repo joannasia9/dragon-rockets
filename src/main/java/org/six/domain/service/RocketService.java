@@ -1,6 +1,7 @@
 package org.six.domain.service;
 
 import org.six.domain.exception.RocketAlreadyExistsException;
+import org.six.domain.exception.RocketNotExistsException;
 import org.six.domain.model.Rocket;
 import org.six.port.repository.RocketRepository;
 
@@ -27,6 +28,9 @@ class DefaultRocketService implements RocketService {
 
     @Override
     public void changeRocketStatus(Rocket rocketWithNewStatus) {
-        // TODO: Implement
+        if (!rocketRepository.existsByName(rocketWithNewStatus.name())) {
+            throw new RocketNotExistsException(rocketWithNewStatus.name());
+        }
+        rocketRepository.update(rocketWithNewStatus);
     }
 }

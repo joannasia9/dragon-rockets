@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.six.domain.exception.RocketAlreadyExistsException;
 import org.six.domain.model.Rocket;
+import org.six.domain.model.RocketStatus;
 import org.six.infrastructure.repository.InMemoryRocketRepository;
 import org.six.port.repository.RocketRepository;
 
@@ -53,13 +54,57 @@ public class RocketServiceImplTest {
     }
 
     @Test
-    void shouldChangeRocketStatusFromOnGroundToInSpaceOrInRepair() {
-        // TODO: Implement
+    void shouldChangeRocketStatusFromOnGroundToInSpace() {
+        // given
+        var newRocket = Rocket.withDefaultStatus("R-1");
+        rocketService.addNewRocket(newRocket);
+
+        var rocketWithNewStatus = new Rocket(newRocket.name(), RocketStatus.IN_SPACE);
+
+        //when
+        assertDoesNotThrow(() -> rocketService.changeRocketStatus(rocketWithNewStatus));
+
+        //then
+        var updatedRocket = rocketRepository.findByName(newRocket.name());
+        assertTrue(updatedRocket.isPresent());
+        assertEquals(newRocket.name(), updatedRocket.get().name());
+        assertEquals(rocketWithNewStatus.status(), updatedRocket.get().status());
+    }
+
+    @Test
+    void shouldChangeRocketStatusFromOnGroundToInRepair() {
+        // given
+        var newRocket = Rocket.withDefaultStatus("R-1");
+        rocketService.addNewRocket(newRocket);
+
+        var rocketWithNewStatus = new Rocket(newRocket.name(), RocketStatus.IN_REPAIR);
+
+        //when
+        assertDoesNotThrow(() -> rocketService.changeRocketStatus(rocketWithNewStatus));
+
+        //then
+        var updatedRocket = rocketRepository.findByName(newRocket.name());
+        assertTrue(updatedRocket.isPresent());
+        assertEquals(newRocket.name(), updatedRocket.get().name());
+        assertEquals(rocketWithNewStatus.status(), updatedRocket.get().status());
     }
 
     @Test
     void shouldChangeRocketStatusFromInSpaceToInRepair() {
-        // TODO: Implement
+        // given
+        var newRocket = new Rocket("R-1", RocketStatus.IN_SPACE);
+        rocketRepository.insert(newRocket);
+
+        var rocketWithNewStatus = new Rocket(newRocket.name(), RocketStatus.IN_REPAIR);
+
+        //when
+        assertDoesNotThrow(() -> rocketService.changeRocketStatus(rocketWithNewStatus));
+
+        //then
+        var updatedRocket = rocketRepository.findByName(newRocket.name());
+        assertTrue(updatedRocket.isPresent());
+        assertEquals(newRocket.name(), updatedRocket.get().name());
+        assertEquals(rocketWithNewStatus.status(), updatedRocket.get().status());
     }
 
     @Test
