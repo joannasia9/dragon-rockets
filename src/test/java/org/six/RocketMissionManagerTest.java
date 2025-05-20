@@ -3,8 +3,10 @@ package org.six;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.six.application.dto.NewMissionDTO;
 import org.six.application.dto.RocketDTO;
 import org.six.application.dto.SimpleRocketDTO;
+import org.six.application.service.AddNewMissionService;
 import org.six.application.service.AddNewRocketService;
 import org.six.application.service.ChangeRocketStatusService;
 import org.six.domain.model.RocketStatus;
@@ -13,15 +15,17 @@ public class RocketMissionManagerTest {
     private AddNewRocketService addNewRocketService;
     private ChangeRocketStatusService changeRocketStatusService;
     private RocketMissionManager missionManager;
+    private AddNewMissionService addNewMissionService;
 
     @BeforeEach
     void setUp() {
         this.addNewRocketService = Mockito.mock(AddNewRocketService.class);
         this.changeRocketStatusService = Mockito.mock(ChangeRocketStatusService.class);
+        this.addNewMissionService = Mockito.mock(AddNewMissionService.class);
         this.missionManager = new RocketMissionManager(
                 this.addNewRocketService,
-                this.changeRocketStatusService
-        );
+                this.changeRocketStatusService,
+                this.addNewMissionService);
     }
 
     @Test
@@ -50,7 +54,14 @@ public class RocketMissionManagerTest {
 
     @Test
     void shouldProcessAddNewMissionAction() {
-        // TODO: Implement
+        // given
+        var mission = new NewMissionDTO("W-1");
+
+        // when
+        missionManager.addNewMission(mission);
+
+        // then
+        Mockito.verify(addNewMissionService).execute(mission);
     }
 
     @Test

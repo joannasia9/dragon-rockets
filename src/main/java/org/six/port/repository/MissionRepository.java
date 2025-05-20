@@ -13,4 +13,6 @@ public interface MissionRepository {
     List<Mission> findAll();
 
     Optional<Mission> findByName(String name);
+
+    boolean existsByName(String name);
 }
