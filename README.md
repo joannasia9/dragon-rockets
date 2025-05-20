@@ -16,7 +16,7 @@ Built with simplicity and extensibility in mind, this library is ideal for integ
 6. **Change Mission Status**
 7. **Get Mission Summary by Rocket Count**
 
-## Assumptions per feature
+## Assumptions
 1. **Add New Rocket**
     - Create a new rocket entry with default status set to **"On ground"**.
     - Prevent duplicate rocket entries by unique identifier.
@@ -54,10 +54,26 @@ Built with simplicity and extensibility in mind, this library is ideal for integ
         - First by **number of rockets (descending)**.
         - Then by **mission name in descending alphabetical order** for ties.
 
+## Functional Assumptions:
+- Updating a mission or rocket status to the same value is allowed (idempotent updates are permitted).
+- Any mission or rocket name is valid (no additional validation).
+- Assigning a rocket to a mission may affect the mission’s status (e.g., moving it to PENDING when rocket in status IN_REPAIR).
+- Changing a mission’s status to “ENDED” results in removing all rocket assignments from that mission.
+
 ## Technical assumptions
 - Architecture selection - Hexagonal Architecture + Tactical DDD:
   - Clean separation of concerns
   - Robust and expressive domain model
+- Core domain logic is tested using unit tests at the domain level. 
+- Adding, updating statuses, and assigning rockets may happen asynchronously – read/write operations to the repository may occur concurrently. 
+- The order of rockets/missions in repositories does not matter for correctness because data is sorted during summary generation.
+
+## Refactoring Plans (TODO):
+- Move business logic related to status changes from RocketMissionManager to lower (domain) layers.
+- Restrict classes access.
+- Extract interfaces for application layer services (clean architecture / DIP).
+- Optimise mission status update to rockets assignment removal valid execution (mission status ENDED) - transactional operations.
+- Optimise rockets to mission assignment process to guarantee mission status update valid execution - transactional operations.
 
 ## LLM usage
 - Basic .gitignore file generation taking into account IDE, programming language and OS.
