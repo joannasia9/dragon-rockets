@@ -6,8 +6,6 @@ import org.six.domain.model.Mission;
 import org.six.domain.model.MissionStatus;
 import org.six.infrastructure.repository.InMemoryMissionRepository;
 
-import java.util.Collections;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +31,6 @@ public class InMemoryMissionRepositoryTest {
         assertEquals(1, existingMissions.size());
         assertEquals(mission.name(), existingMissions.getFirst().name());
         assertEquals(mission.status(), existingMissions.getFirst().status());
-        assertEquals(mission.rockets(), existingMissions.getFirst().rockets());
     }
 
     @Test
@@ -42,7 +39,7 @@ public class InMemoryMissionRepositoryTest {
         var initialMission = Mission.withDefaultStatus("M-1");
         repository.insert(initialMission);
 
-        var newMission = new Mission("M-1", MissionStatus.PENDING, Collections.emptyList());
+        var newMission = new Mission("M-1", MissionStatus.PENDING);
 
         // when:
         repository.insert(newMission);
@@ -74,7 +71,7 @@ public class InMemoryMissionRepositoryTest {
         var initialMission = Mission.withDefaultStatus("M-1");
         repository.insert(initialMission);
 
-        var missionWithNewStatus = new Mission("M-1", MissionStatus.IN_PROGRESS, Collections.emptyList());
+        var missionWithNewStatus = new Mission("M-1", MissionStatus.IN_PROGRESS);
 
         // when:
         repository.update(missionWithNewStatus);
