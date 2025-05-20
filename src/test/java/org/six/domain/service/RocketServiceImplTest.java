@@ -3,10 +3,14 @@ package org.six.domain.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.six.domain.exception.RocketAlreadyExistsException;
+import org.six.domain.exception.RocketStatusChangeNotAllowedException;
 import org.six.domain.model.Rocket;
 import org.six.domain.model.RocketStatus;
+import org.six.domain.validation.RocketStatusUpdateValidator;
+import org.six.infrastructure.repository.InMemoryRocketAssignmentRepository;
 import org.six.infrastructure.repository.InMemoryRocketRepository;
 import org.six.port.repository.RocketRepository;
+import org.six.port.repository.RocketToMissionAssignmentRepository;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,12 +19,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RocketServiceImplTest {
     private RocketRepository rocketRepository;
+    private RocketToMissionAssignmentRepository rocketToMissionAssignmentRepository;
     private RocketService rocketService;
 
     @BeforeEach
     void setUp() {
         this.rocketRepository = new InMemoryRocketRepository();
-        this.rocketService = new DefaultRocketService(this.rocketRepository);
+        this.rocketToMissionAssignmentRepository = new InMemoryRocketAssignmentRepository();
+        this.rocketService = new DefaultRocketService(
+                new RocketStatusUpdateValidator(this.rocketToMissionAssignmentRepository),
+                this.rocketRepository
+        );
     }
 
     @Test
@@ -39,11 +48,6 @@ public class RocketServiceImplTest {
     }
 
     @Test
-    void shouldNotCreateRocketWithBlankName() {
-        // TODO: Implement
-    }
-
-    @Test
     void shouldNotCreateAlreadyExistingRocket() {
         // given
         var newRocket = Rocket.withDefaultStatus("R-1");
@@ -54,10 +58,11 @@ public class RocketServiceImplTest {
     }
 
     @Test
-    void shouldChangeRocketStatusFromOnGroundToInSpace() {
+    void shouldChangeRocketStatusFromOnGroundToInSpaceIfAssignedToAMission() {
         // given
         var newRocket = Rocket.withDefaultStatus("R-1");
         rocketService.addNewRocket(newRocket);
+        rocketToMissionAssignmentRepository.insertAssignment(newRocket.name(), "M-1");
 
         var rocketWithNewStatus = new Rocket(newRocket.name(), RocketStatus.IN_SPACE);
 
@@ -109,12 +114,24 @@ public class RocketServiceImplTest {
 
     @Test
     void shouldNotChangeRocketStatusToOnGroundWhenAnyMissionAssigned() {
-        // TODO: Implement
+        // given
+        var rocketWithNewStatus = new Rocket("R-1", RocketStatus.ON_GROUND);
+
+        this.rocketRepository.insert(rocketWithNewStatus);
+        this.rocketToMissionAssignmentRepository.insertAssignment(rocketWithNewStatus.name(), "M-1");
+
+        // when
+        assertThrows(RocketStatusChangeNotAllowedException.class, () -> rocketService.changeRocketStatus(rocketWithNewStatus));
     }
 
     @Test
     void shouldNotChangeRocketStatusToInSpaceWhenNoneMissionAssigned() {
-        // TODO: Implement
+        // given
+        var rocketWithNewStatus = new Rocket("R-1", RocketStatus.IN_SPACE);
+        this.rocketRepository.insert(rocketWithNewStatus);
+
+        // when
+        assertThrows(RocketStatusChangeNotAllowedException.class, () -> rocketService.changeRocketStatus(rocketWithNewStatus));
     }
 }
 
